@@ -145,6 +145,11 @@ ggplot(data.NA.omit[,list(total=sum(steps)), by="date"], aes(x=total))+
 
 ![plot of chunk HistogramMeanTotalStepsDay](./PA1_template_files/figure-html/HistogramMeanTotalStepsDay.png) 
 
+```r
+dev.copy(png, "./figures/histogram.png", width=480, height=480, bg="transparent")
+dev.off()
+```
+
 To calculate mean and median were calculated by applying `mean()` and `median()` functions to the total number of steps taken per day (second column in `data.NA.omit` object:
 
 
@@ -169,12 +174,6 @@ The median total number of steps taken per day is 10765.
 
 Last thing to do for this part of the assignment is to save histogram figure in `figure/` folder:
 
-
-```r
-dev.copy(png,"./figures/histogram.png", width=480, height=480, bg="transparent")
-dev.off()
-```
-
 ### What is the average daily activity pattern?
 To create a time series plot of the 5-minute interval and the average number of steps taken, averaged across all days dataset without missing values from previous part (`data.NA.omit`) was used. By not grouping by date average number of steps across all days have been calculated and then grouped by interval to get average number of steps per interval: 
 
@@ -191,15 +190,25 @@ ggplot(data.NA.omit[,list(total=mean(steps)), by="interval"], aes(x=interval, y=
 
 ![plot of chunk DailyActivityPattern](./PA1_template_files/figure-html/DailyActivityPattern.png) 
 
-On average, across all the days in the dataset 835 contains maximum number of steps (206.1698).
+```r
+dev.copy(png, "./figures/AvgStepsInterval.png", width=480, height=480, bg="transparent")
+```
 
-Saving the time-series plot figure in `figure/` folder:
-
+```
+## png 
+##   3
+```
 
 ```r
-dev.copy(png,"./figures/AvgStepsInterval.png", width=480, height=480, bg="transparent")
 dev.off()
 ```
+
+```
+## pdf 
+##   2
+```
+
+On average, across all the days in the dataset 835 contains maximum number of steps (206.1698).
 
 ## Imputing missing values
 First, quick summary for missing values across each column in dataset:
@@ -262,6 +271,11 @@ ggplot(data[,list(total=sum(steps)), by="date"], aes(x=total))+
 
 ![plot of chunk HistogramMeanTotalStepsDayImputed](./PA1_template_files/figure-html/HistogramMeanTotalStepsDayImputed.png) 
 
+```r
+dev.copy(png, "./figures/histogramImputedNA.png", width=480, height=480, bg="transparent")
+dev.off()
+```
+
 Mean and median were calculated same as in before by applying `mean()` and `median()` functions but now to the total number of steps taken per day in the `data` object:
 
 
@@ -284,18 +298,14 @@ median(data[,list(total=sum(steps)), by="date"][[2]])
 The mean total number of steps taken per day is 1.0767 &times; 10<sup>4</sup>.  
 The median total number of steps taken per day is 1.0781 &times; 10<sup>4</sup>.
 
-As clear from the results the imputation
+As clear from the results the imputation did not change the values of mean and median considerably, although on the histogram its clear that dataset with imputed missing values have higher number of steps for all the bins.
 
 Last thing to do for this part of the assignment is to save histogram figure in `figure/` folder:
 
 
 ```r
-dev.copy(png,"./figures/histogram.png", width=480, height=480, bg="transparent")
+#dev.copy(png,"/figures/histogramImputedNA.png", width=480, height=480, bg="transparent")
 dev.off()
 ```
-
-
-
-
 
 ## Are there differences in activity patterns between weekdays and weekends?
