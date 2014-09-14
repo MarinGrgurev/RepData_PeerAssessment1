@@ -92,19 +92,7 @@ str(data)
 ```
 
 ### What is mean total number of steps taken per day?
-As stated in the assignment missing values can be ignored for this part and thus rows with missing value are excluded from calculations. First, one quick summary for missing values across each column in dataset:
-
-
-```r
-data[,lapply(data, function(x) {sum(is.na(x))})]
-```
-
-```
-##    steps date interval
-## 1:  2304    0        0
-```
-
-There is 2304 rows that have missing values in _steps_ column while other two columns don't have missing values. With function `complete.cases()` missing values are excluded from calculations:
+As stated in the assignment missing values can be ignored for this part so with function `complete.cases()` missing values are excluded from calculations:
 
 
 ```r
@@ -214,6 +202,99 @@ dev.off()
 ```
 
 ## Imputing missing values
+First, quick summary for missing values across each column in dataset:
+
+
+```r
+data[,lapply(data, function(x) {sum(is.na(x))})]
+```
+
+```
+##    steps date interval
+## 1:  2304    0        0
+```
+
+There is 2304 rows that have missing values in _steps_ column while other two columns don't have missing values.  
+
+For imputation technique the regression predictions imputation was used. More about this relatively simple technique as well as code used in this assignment can be found [here](http://www.stat.columbia.edu/~gelman/arm/missing.pdf). This imputation technique is a simple and general imputation procedure that uses information on rest of the data on interval and date and regress it to the nonzero values of number of steps. First linear regression model is fitted with `lm`:
+
+
+```r
+lm.impute <- lm(steps~interval+date, data=data)
+```
+
+And then the predictions are obtained for all the data:
+
+
+```r
+pred.impute <- predict (lm.impute, data)
+```
+
+Function `data.impute` will recreate a completed dataset by imputing predictions into the missing values:
+
+
+```r
+data.impute <- function (a, a.impute){ifelse (is.na(a), a.impute, a)}
+data$steps <- data.impute(data$steps, pred.impute)
+```
+
+Another check for missing values in _steps_ column:
+
+
+```r
+sum(is.na(data[,steps]))
+```
+
+```
+## [1] 0
+```
+
+Histogram now shows distribution of total number of steps taken each day but with imputed missing values by regression predictions imputation technique:
+
+
+```r
+ggplot(data[,list(total=sum(steps)), by="date"], aes(x=total))+
+        geom_histogram(breaks=seq(0,22500,2500), colour="black", fill="gray")+
+        labs(x="Total number of steps per day", y="Frequency")+
+        ggtitle("Frequency of total number of steps taken each day (Imputed NAs)")+
+        theme_bw()
+```
+
+![plot of chunk HistogramMeanTotalStepsDayImputed](./PA1_template_files/figure-html/HistogramMeanTotalStepsDayImputed.png) 
+
+Mean and median were calculated same as in before by applying `mean()` and `median()` functions but now to the total number of steps taken per day in the `data` object:
+
+
+```r
+mean(data[,list(total=sum(steps)), by="date"][[2]])
+```
+
+```
+## [1] 10767
+```
+
+```r
+median(data[,list(total=sum(steps)), by="date"][[2]])
+```
+
+```
+## [1] 10781
+```
+
+The mean total number of steps taken per day is 1.0767 &times; 10<sup>4</sup>.  
+The median total number of steps taken per day is 1.0781 &times; 10<sup>4</sup>.
+
+As clear from the results the imputation
+
+Last thing to do for this part of the assignment is to save histogram figure in `figure/` folder:
+
+
+```r
+dev.copy(png,"./figures/histogram.png", width=480, height=480, bg="transparent")
+dev.off()
+```
+
+
 
 
 
