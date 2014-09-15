@@ -184,7 +184,7 @@ data[,weekEndDay := as.factor(sapply(data$date, function(x) {ifelse(weekdays(x) 
 
 Then, panel plot containing a time series plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days is created. Becasue the example plot described in assignemnt is not perfect to explore the differences in activity pattern two plots were created. First plot compares two activity patterns placed on same plotting area representing weekdays and weekend activity patterns:
 
-```{r WeekEndDayCompare1, echo=TRUE, results='hide'}
+```{r WeekEndDayCompare1, echo=TRUE}
 ggplot(data[,list(total=mean(steps)), by="interval,weekEndDay"], aes(x=interval, y=total, group=weekEndDay))+
         geom_line(aes(color=weekEndDay))+
         scale_x_continuous(breaks=c(0, 500, 1000, 1500, 2000))+
@@ -200,7 +200,7 @@ ggplot(data[,list(total=mean(steps)), by="interval,weekEndDay"], aes(x=interval,
 
 The second plot represent same comparison of activity pattern but on two different plotting areas (i.e. panel plot): 
 
-```{r WeekEndDayCompare2, echo=TRUE, results='hide'}
+```{r WeekEndDayCompare2, echo=TRUE}
 ggplot(data[,list(total=mean(steps)), by="interval,weekEndDay"], aes(x=interval, y=total, group=weekEndDay))+
         geom_line(aes(color=weekEndDay))+
         facet_grid(.~weekEndDay)+
