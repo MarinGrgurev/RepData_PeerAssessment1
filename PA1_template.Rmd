@@ -84,7 +84,7 @@ data.NA.omit[,list(total=sum(steps)), by="date"][1:6]
 
 Histogram shows us distribution of total number of steps taken each day:
 
-```{r HistogramMeanTotalStepsDay, echo=TRUE, results='hide'}
+```{r HistogramMeanTotalStepsDay, echo=TRUE}
 ggplot(data.NA.omit[,list(total=sum(steps)), by="date"], aes(x=total))+
         geom_histogram(breaks=seq(0,22500,2500), colour="black", fill="gray")+
         labs(x="Total number of steps per day", y="Frequency")+
@@ -107,7 +107,7 @@ Last thing to do for this part of the assignment is to save histogram figure in 
 ### What is the average daily activity pattern?
 To create a time series plot of the 5-minute interval and the average number of steps taken, averaged across all days dataset without missing values from previous part (`data.NA.omit`) was used. By not grouping by date average number of steps across all days have been calculated and then grouped by interval to get average number of steps per interval: 
 
-```{r DailyActivityPattern, echo=TRUE, results='hide'}
+```{r DailyActivityPattern, echo=TRUE}
 ggplot(data.NA.omit[,list(total=mean(steps)), by="interval"], aes(x=interval, y=total))+
         geom_line()+
         geom_vline(xintercept=data.NA.omit[,list(total=mean(steps)), by="interval"][total==max(total)][[1]], colour="green")+
@@ -155,7 +155,7 @@ sum(is.na(data[,steps]))
 
 Histogram now shows distribution of total number of steps taken each day but with imputed missing values by regression predictions imputation technique:
 
-```{r HistogramMeanTotalStepsDayImputed, echo=TRUE, results='hide'}
+```{r HistogramMeanTotalStepsDayImputed, echo=TRUE}
 ggplot(data[,list(total=sum(steps)), by="date"], aes(x=total))+
         geom_histogram(breaks=seq(0,22500,2500), colour="black", fill="gray")+
         labs(x="Total number of steps per day", y="Frequency")+
