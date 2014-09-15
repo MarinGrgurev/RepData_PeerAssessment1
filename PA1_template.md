@@ -192,20 +192,7 @@ ggplot(data.NA.omit[,list(total=mean(steps)), by="interval"], aes(x=interval, y=
 
 ```r
 dev.copy(png, "./figures/AvgStepsInterval.png", width=480, height=480, bg="transparent")
-```
-
-```
-## png 
-##   3
-```
-
-```r
 dev.off()
-```
-
-```
-## pdf 
-##   2
 ```
 
 On average, across all the days in the dataset 835 contains maximum number of steps (206.1698).
@@ -300,12 +287,71 @@ The median total number of steps taken per day is 1.0781 &times; 10<sup>4</sup>.
 
 As clear from the results the imputation did not change the values of mean and median considerably, although on the histogram its clear that dataset with imputed missing values have higher number of steps for all the bins.
 
-Last thing to do for this part of the assignment is to save histogram figure in `figure/` folder:
+## Are there differences in activity patterns between weekdays and weekends?
+To explore if there's any difference in activity patterns between weekdays and weekends a panel plot was created. First, additional column is added to the dataset by calling `sapply` function on _date_ column to check if the date is in the list of working day names. Based on the result weekday or weekend factor value was assigned in new column named _weekEndDay_:
 
 
 ```r
-#dev.copy(png,"/figures/histogramImputedNA.png", width=480, height=480, bg="transparent")
+data[,weekEndDay := as.factor(sapply(data$date, function(x) {ifelse(weekdays(x) %in% weekdays(Sys.Date()+0:4), "weekday", "weekend")}))]
+```
+
+```
+##        steps       date interval weekEndDay
+##     1: 29.19 2012-10-01        0    weekday
+##     2: 29.23 2012-10-01        5    weekday
+##     3: 29.26 2012-10-01       10    weekday
+##     4: 29.29 2012-10-01       15    weekday
+##     5: 29.33 2012-10-01       20    weekday
+##    ---                                     
+## 17564: 45.44 2012-11-30     2335    weekday
+## 17565: 45.48 2012-11-30     2340    weekday
+## 17566: 45.51 2012-11-30     2345    weekday
+## 17567: 45.54 2012-11-30     2350    weekday
+## 17568: 45.58 2012-11-30     2355    weekday
+```
+
+Then, panel plot containing a time series plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days is created. Becasue the example plot described in assignemnt is not perfect to explore the differences in activity pattern two plots were created. First plot compares two activity patterns placed on same plotting area representing weekdays and weekend activity patterns:
+
+
+```r
+ggplot(data[,list(total=mean(steps)), by="interval,weekEndDay"], aes(x=interval, y=total, group=weekEndDay))+
+        geom_line(aes(color=weekEndDay))+
+        scale_x_continuous(breaks=c(0, 500, 1000, 1500, 2000))+
+        labs(x="5-minute interval", y="Average number of steps taken")+
+        ggtitle("Comparison of activity patterns between weekdays and weekends")+
+        theme_bw()+
+        theme(plot.title=element_text(vjust=1), 
+              legend.title=element_blank(), 
+              legend.position=c(0.99, .70), 
+              legend.justification=c(1,0),
+              legend.background=element_rect(fill="transparent"))
+```
+
+![plot of chunk weekEndDayCompare1](./PA1_template_files/figure-html/weekEndDayCompare1.png) 
+
+```r
+dev.copy(png, "./figures/activityComparison1.png", width=480, height=480, bg="transparent")
 dev.off()
 ```
 
-## Are there differences in activity patterns between weekdays and weekends?
+The second plot represent same comparison of activity pattern but on two different plotting areas (i.e. panel plot): 
+
+
+```r
+ggplot(data[,list(total=mean(steps)), by="interval,weekEndDay"], aes(x=interval, y=total, group=weekEndDay))+
+        geom_line(aes(color=weekEndDay))+
+        facet_grid(.~weekEndDay)+
+        labs(x="5-minute interval", y="Average number of steps taken")+
+        ggtitle("Comparison of activity patterns between weekdays and weekends")+
+        theme_bw()+
+        theme(legend.position="none")
+```
+
+![plot of chunk weekEndDayCompare2](./PA1_template_files/figure-html/weekEndDayCompare2.png) 
+
+```r
+dev.copy(png, "./figures/activityComparison2.png", width=480, height=480, bg="transparent")
+dev.off()
+```
+
+By looking at created plots it is evident that the difference in activity patterns between weekdays and weekends really exists which is not surprising given the fact that humans tend to use weekends for various recreational activities during the course of a day and they are definitely not rushing to the work in the morning. Also very interesting to note is steep curve climb around 5.15 - 5.45 in the weekday mornings - phenomena which is probably influenced by alarm clocks :)
