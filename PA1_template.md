@@ -221,7 +221,9 @@ Function `data.impute` will recreate a completed dataset by imputing predictions
 
 
 ```r
-data.impute <- function (a, a.impute){ifelse (is.na(a), a.impute, a)}
+data.impute <- function (x, x.impute){
+        ifelse (is.na(x), x.impute, x)
+        }
 data$steps <- data.impute(data$steps, pred.impute)
 ```
 

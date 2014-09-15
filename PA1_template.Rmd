@@ -143,7 +143,9 @@ pred.impute <- predict (lm.impute, data)
 Function `data.impute` will recreate a completed dataset by imputing predictions into the missing values:
 
 ```{r ImputationMissingValues, echo=TRUE}
-data.impute <- function (a, a.impute){ifelse (is.na(a), a.impute, a)}
+data.impute <- function (x, x.impute){
+        ifelse (is.na(x), x.impute, x)
+        }
 data$steps <- data.impute(data$steps, pred.impute)
 ```
 
