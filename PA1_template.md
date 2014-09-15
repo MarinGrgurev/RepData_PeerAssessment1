@@ -302,7 +302,6 @@ Then, panel plot containing a time series plot of the 5-minute interval (x-axis)
 ```r
 ggplot(data[,list(total=mean(steps)), by="interval,weekEndDay"], aes(x=interval, y=total, group=weekEndDay))+
         geom_line(aes(color=weekEndDay))+
-        scale_x_continuous(breaks=c(0, 500, 1000, 1500, 2000))+
         labs(x="5-minute interval", y="Average number of steps taken")+
         ggtitle("Comparison of activity patterns between weekdays and weekends")+
         theme_bw()+

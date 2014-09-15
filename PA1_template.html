@@ -223,7 +223,6 @@ data$steps &lt;- data.impute(data$steps, pred.impute)</code></pre>
 <p>Then, panel plot containing a time series plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days is created. Becasue the example plot described in assignemnt is not perfect to explore the differences in activity pattern two plots were created. First plot compares two activity patterns placed on same plotting area representing weekdays and weekend activity patterns:</p>
 <pre class="r"><code>ggplot(data[,list(total=mean(steps)), by=&quot;interval,weekEndDay&quot;], aes(x=interval, y=total, group=weekEndDay))+
         geom_line(aes(color=weekEndDay))+
-        scale_x_continuous(breaks=c(0, 500, 1000, 1500, 2000))+
         labs(x=&quot;5-minute interval&quot;, y=&quot;Average number of steps taken&quot;)+
         ggtitle(&quot;Comparison of activity patterns between weekdays and weekends&quot;)+
         theme_bw()+
