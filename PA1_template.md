@@ -146,11 +146,6 @@ ggplot(data.NA.omit[,list(total=sum(steps)), by="date"], aes(x=total))+
 
 ![plot of chunk HistogramMeanTotalStepsDay](figures/HistogramMeanTotalStepsDay.png) 
 
-```r
-#dev.copy(png, "./figures/histogram.png", width=480, height=480, bg="transparent")
-#dev.off()
-```
-
 To calculate mean and median were calculated by applying `mean()` and `median()` functions to the total number of steps taken per day (second column in `data.NA.omit` object:
 
 
@@ -190,11 +185,6 @@ ggplot(data.NA.omit[,list(total=mean(steps)), by="interval"], aes(x=interval, y=
 ```
 
 ![plot of chunk DailyActivityPattern](figures/DailyActivityPattern.png) 
-
-```r
-#dev.copy(png, "./figures/AvgStepsInterval.png", width=480, height=480, bg="transparent")
-#dev.off()
-```
 
 On average, across all the days in the dataset 835 contains maximum number of steps (206.1698).
 
@@ -258,11 +248,6 @@ ggplot(data[,list(total=sum(steps)), by="date"], aes(x=total))+
 ```
 
 ![plot of chunk HistogramMeanTotalStepsDayImputed](figures/HistogramMeanTotalStepsDayImputed.png) 
-
-```r
-#dev.copy(png, "./figures/histogramImputedNA.png", width=480, height=480, bg="transparent")
-#dev.off()
-```
 
 Mean and median were calculated same as in before by applying `mean()` and `median()` functions but now to the total number of steps taken per day in the `data` object:
 
@@ -328,12 +313,7 @@ ggplot(data[,list(total=mean(steps)), by="interval,weekEndDay"], aes(x=interval,
               legend.background=element_rect(fill="transparent"))
 ```
 
-![plot of chunk weekEndDayCompare1](figures/weekEndDayCompare1.png) 
-
-```r
-#dev.copy(png, "./figures/activityComparison1.png", width=480, height=480, bg="transparent")
-#dev.off()
-```
+![plot of chunk WeekEndDayCompare1](figures/WeekEndDayCompare1.png) 
 
 The second plot represent same comparison of activity pattern but on two different plotting areas (i.e. panel plot): 
 
@@ -348,11 +328,6 @@ ggplot(data[,list(total=mean(steps)), by="interval,weekEndDay"], aes(x=interval,
         theme(legend.position="none")
 ```
 
-![plot of chunk weekEndDayCompare2](figures/weekEndDayCompare2.png) 
-
-```r
-#dev.copy(png, "./figures/activityComparison2.png", width=480, height=480, bg="transparent")
-#dev.off()
-```
+![plot of chunk WeekEndDayCompare2](figures/WeekEndDayCompare2.png) 
 
 By looking at created plots it is evident that the difference in activity patterns between weekdays and weekends really exists which is not surprising given the fact that humans tend to use weekends for various recreational activities during the course of a day and they are definitely not rushing to the work in the morning. Also very interesting to note is steep curve climb around 5.15 - 5.45 in the weekday mornings - phenomena which is probably influenced by alarm clocks :)
