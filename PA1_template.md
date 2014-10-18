@@ -1,6 +1,6 @@
 # Reproducible Research: Peer Assessment 1 - Personal Activity Monitoring
 Marin Grgurev  
-September 14, 2014  
+October 18, 2014  
 
 
 
@@ -70,7 +70,7 @@ str(data)
 ##  - attr(*, ".internal.selfref")=<externalptr>
 ```
 
-As evident from the `str()` result, the _date_ column is of `"character"` class. To correctly plot steps across time, _date_ column needed to be converted from character representation to class `"Date"`:
+As evident from the `str()` result, the _date_ column is of `"character"` class. To correctly plot steps across time, _date_ column needs to be converted from character representation to class `"Date"`:
 
 
 ```r
@@ -116,7 +116,7 @@ data.NA.omit
 ## 15264:     0 2012-11-29     2355
 ```
 
-To calculate total number of steps taken per day, first total number of steps was calculated with `sum()` and then aggregated by _date_: 
+To calculate total number of steps taken per day, first total number of steps was summed and then aggregated by _date_: 
 
 
 ```r
@@ -142,7 +142,11 @@ ggplot(data.NA.omit[,list(total=sum(steps)), by="date"], aes(x=total))+
         labs(x="Total number of steps per day", y="Frequency")+
         ggtitle("Frequency of total number of steps taken each day")+
         theme_bw()+
-        theme(plot.title = element_text(face="bold", vjust=2))
+        theme(text=element_text(colour = "grey25"), 
+              plot.title = element_text(face="bold", vjust=2),
+              axis.title.x = element_text(colour = "grey25", vjust=-0.3),
+              axis.title.y = element_text(colour = "grey25", vjust=1),
+              legend.position="none")
 ```
 
 ![plot of chunk HistogramMeanTotalStepsDay](figures/HistogramMeanTotalStepsDay.png) 
@@ -181,15 +185,19 @@ ggplot(data.NA.omit[,list(total=mean(steps)), by="interval"], aes(x=interval, y=
         labs(x="5-minute interval", y="Average number of steps taken")+
         ggtitle("Average number of steps taken per each 5-minute interval")+
         theme_bw()+
-        theme(plot.title = element_text(face="bold", vjust=2))
+        theme(text=element_text(colour = "grey25"), 
+              plot.title = element_text(face="bold", vjust=2),
+              axis.title.x = element_text(colour = "grey25", vjust=-0.3),
+              axis.title.y = element_text(colour = "grey25", vjust=1),
+              legend.position="none")
 ```
 
 ![plot of chunk DailyActivityPattern](figures/DailyActivityPattern.png) 
 
-On average, across all the days in the dataset 835 contains maximum number of steps (206.1698).
+On average, across all the days in the dataset 835th interval contains maximum number of steps (206.1698).
 
 ## Imputing missing values
-First, quick summary for missing values across each column in dataset:
+First, quick summary for missing values across each column in dataset is given:
 
 
 ```r
@@ -203,7 +211,7 @@ data[,lapply(data, function(x) {sum(is.na(x))})]
 
 There is 2304 rows that have missing values in _steps_ column while other two columns don't have missing values.  
 
-For imputation technique the regression predictions was used to perform determinsitic imputation. More about this relatively simple technique as well as code used in this assignment can be found [here](http://www.stat.columbia.edu/~gelman/arm/missing.pdf). This imputation technique is a simple and general imputation procedure that uses information from the rest of the data (interval and date) to calculate regression model and that model is then used to impute values in cases where that variable is missing. First linear regression model is fitted with `lm`:
+For imputation technique the predictions by regression was used to perform determinsitic imputation. More about this relatively simple technique as well as code used in this assignment can be found [here](http://www.stat.columbia.edu/~gelman/arm/missing.pdf). This imputation technique is a simple and general imputation procedure that uses information from the rest of the data (_interval_ and _date_ columns) to fit regression model which is then used to impute values in cases where that variable had missing value. First linear regression model was fitted with `lm()`:
 
 
 ```r
@@ -253,7 +261,7 @@ sum(is.na(data[,steps]))
 ## [1] 0
 ```
 
-Histogram now shows distribution of total number of steps taken each day but with imputed missing values by regression predictions imputation technique:
+Histogram now shows distribution of total number of steps taken each day but with imputed missing values:
 
 
 ```r
@@ -262,12 +270,16 @@ ggplot(data[,list(total=sum(steps)), by="date"], aes(x=total))+
         labs(x="Total number of steps per day", y="Frequency")+
         ggtitle("Frequency of total number of steps taken each day (Imputed NAs)")+
         theme_bw()+
-        theme(plot.title = element_text(face="bold", vjust=2))
+        theme(text=element_text(colour = "grey25"), 
+              plot.title = element_text(face="bold", vjust=2),
+              axis.title.x = element_text(colour = "grey25", vjust=-0.3),
+              axis.title.y = element_text(colour = "grey25", vjust=1),
+              legend.position="none")
 ```
 
 ![plot of chunk HistogramMeanTotalStepsDayImputed](figures/HistogramMeanTotalStepsDayImputed.png) 
 
-Mean and median were calculated same as in before by applying `mean()` and `median()` functions but now to the total number of steps taken per day in the `data` object:
+Mean and median values were calculated same by applying `mean()` and `median()` functions but now to the total number of steps taken per day in the `data` object (original data set with imputed missing values):
 
 
 ```r
@@ -292,7 +304,7 @@ The median total number of steps taken per day is 10781.
 As clear from the results the imputation did not change the values of mean and median considerably, although on the histogram its clear that dataset with imputed missing values have higher number of steps for all the bins.
 
 ## Are there differences in activity patterns between weekdays and weekends?
-To explore if there's any difference in activity patterns between weekdays and weekends a panel plot was created. First, additional column is added to the dataset by calling `sapply` function on *date* column to check if the date is in the list of working day names. Based on the result weekday or weekend factor value was assigned in new column named *weekEndDay*:
+To explore if there's any difference in activity patterns between weekdays and weekends a panel plot was created. First, additional column is added to the dataset by calling `sapply` function on _date_ column to check if the date is in the list of working day names. Based on the result weekday or weekend factor value was assigned in new column named *weekEndDay*:
 
 
 ```r
@@ -307,11 +319,11 @@ data[,weekEndDay := as.factor(sapply(data$date, function(x) {ifelse(weekdays(x) 
 ##     4: -0.20825 2012-10-01       15    weekday
 ##     5: -0.28372 2012-10-01       20    weekday
 ##    ---                                        
-## 17564:  5.06415 2012-11-30     2335    weekday
-## 17565:  3.66792 2012-11-30     2340    weekday
-## 17566:  1.00755 2012-11-30     2345    weekday
-## 17567:  0.59245 2012-11-30     2350    weekday
-## 17568:  1.44151 2012-11-30     2355    weekday
+## 17564:  5.06415 2012-11-30     2335    weekend
+## 17565:  3.66792 2012-11-30     2340    weekend
+## 17566:  1.00755 2012-11-30     2345    weekend
+## 17567:  0.59245 2012-11-30     2350    weekend
+## 17568:  1.44151 2012-11-30     2355    weekend
 ```
 
 Then, panel plot containing a time series plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days is created. Because the example plot described in assignment is not perfect to see the differences in activity pattern, two plots were created. First plot compares two activity patterns placed on same plotting area representing weekdays and weekend activity patterns:

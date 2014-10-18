@@ -1,7 +1,7 @@
 ---
 title: "Reproducible Research: Peer Assessment 1 - Personal Activity Monitoring"
 author: Marin Grgurev
-date: September 14, 2014
+date: October 18, 2014
 output: 
   html_document: 
     keep_md: true
@@ -56,7 +56,7 @@ To compactly display internal strucuture of a `data` object (i.e. data structure
 str(data)
 ```
 
-As evident from the `str()` result, the _date_ column is of `"character"` class. To correctly plot steps across time, _date_ column needed to be converted from character representation to class `"Date"`:
+As evident from the `str()` result, the _date_ column is of `"character"` class. To correctly plot steps across time, _date_ column needs to be converted from character representation to class `"Date"`:
 
 ```{r ConvertingColumns, echo=TRUE, results='hide'}
 data[,date := as.Date(date, "%Y-%m-%d")]
@@ -76,7 +76,7 @@ data.NA.omit <- data[complete.cases(data),]
 data.NA.omit
 ```
 
-To calculate total number of steps taken per day, first total number of steps was calculated with `sum()` and then aggregated by _date_: 
+To calculate total number of steps taken per day, first total number of steps was summed and then aggregated by _date_: 
 
 ```{r MeanTotalStepsDay, echo=TRUE}
 data.NA.omit[,list(total=sum(steps)), by="date"][1:6]
@@ -90,7 +90,11 @@ ggplot(data.NA.omit[,list(total=sum(steps)), by="date"], aes(x=total))+
         labs(x="Total number of steps per day", y="Frequency")+
         ggtitle("Frequency of total number of steps taken each day")+
         theme_bw()+
-        theme(plot.title = element_text(face="bold", vjust=2))
+        theme(text=element_text(colour = "grey25"), 
+              plot.title = element_text(face="bold", vjust=2),
+              axis.title.x = element_text(colour = "grey25", vjust=-0.3),
+              axis.title.y = element_text(colour = "grey25", vjust=1),
+              legend.position="none")
 ```
 
 Mean and median were calculated by applying `mean()` and `median()` functions to the total number of steps taken per day (second column in `data.NA.omit` object:
@@ -114,13 +118,17 @@ ggplot(data.NA.omit[,list(total=mean(steps)), by="interval"], aes(x=interval, y=
         labs(x="5-minute interval", y="Average number of steps taken")+
         ggtitle("Average number of steps taken per each 5-minute interval")+
         theme_bw()+
-        theme(plot.title = element_text(face="bold", vjust=2))
+        theme(text=element_text(colour = "grey25"), 
+              plot.title = element_text(face="bold", vjust=2),
+              axis.title.x = element_text(colour = "grey25", vjust=-0.3),
+              axis.title.y = element_text(colour = "grey25", vjust=1),
+              legend.position="none")
 ```
 
-On average, across all the days in the dataset `r data.NA.omit[,list(total=mean(steps)), by="interval"][total==max(total)][[1]]` contains maximum number of steps (`r data.NA.omit[,list(total=mean(steps)), by="interval"][total==max(total)][[2]]`).
+On average, across all the days in the dataset `r data.NA.omit[,list(total=mean(steps)), by="interval"][total==max(total)][[1]]`th interval contains maximum number of steps (`r data.NA.omit[,list(total=mean(steps)), by="interval"][total==max(total)][[2]]`).
 
 ## Imputing missing values
-First, quick summary for missing values across each column in dataset:
+First, quick summary for missing values across each column in dataset is given:
 
 ```{r MissingValueCheck, echo=TRUE}
 data[,lapply(data, function(x) {sum(is.na(x))})]
@@ -128,7 +136,7 @@ data[,lapply(data, function(x) {sum(is.na(x))})]
 
 There is `r sum(is.na(data[,steps]))` rows that have missing values in _steps_ column while other two columns don't have missing values.  
 
-For imputation technique the regression predictions was used to perform determinsitic imputation. More about this relatively simple technique as well as code used in this assignment can be found [here](http://www.stat.columbia.edu/~gelman/arm/missing.pdf). This imputation technique is a simple and general imputation procedure that uses information from the rest of the data (interval and date) to calculate regression model and that model is then used to impute values in cases where that variable is missing. First linear regression model is fitted with `lm`:
+For imputation technique the predictions by regression was used to perform determinsitic imputation. More about this relatively simple technique as well as code used in this assignment can be found [here](http://www.stat.columbia.edu/~gelman/arm/missing.pdf). This imputation technique is a simple and general imputation procedure that uses information from the rest of the data (_interval_ and _date_ columns) to fit regression model which is then used to impute values in cases where that variable had missing value. First linear regression model was fitted with `lm()`:
 
 ```{r ImputationModelFit, echo=TRUE}
 lm.impute <- lm(steps~as.factor(interval)+date, data=data)
@@ -155,7 +163,7 @@ Another check for missing values in _steps_ column:
 sum(is.na(data[,steps]))
 ```
 
-Histogram now shows distribution of total number of steps taken each day but with imputed missing values by regression predictions imputation technique:
+Histogram now shows distribution of total number of steps taken each day but with imputed missing values:
 
 ```{r HistogramMeanTotalStepsDayImputed, echo=TRUE}
 ggplot(data[,list(total=sum(steps)), by="date"], aes(x=total))+
@@ -163,10 +171,14 @@ ggplot(data[,list(total=sum(steps)), by="date"], aes(x=total))+
         labs(x="Total number of steps per day", y="Frequency")+
         ggtitle("Frequency of total number of steps taken each day (Imputed NAs)")+
         theme_bw()+
-        theme(plot.title = element_text(face="bold", vjust=2))
+        theme(text=element_text(colour = "grey25"), 
+              plot.title = element_text(face="bold", vjust=2),
+              axis.title.x = element_text(colour = "grey25", vjust=-0.3),
+              axis.title.y = element_text(colour = "grey25", vjust=1),
+              legend.position="none")
 ```
 
-Mean and median were calculated same as in before by applying `mean()` and `median()` functions but now to the total number of steps taken per day in the `data` object:
+Mean and median values were calculated same by applying `mean()` and `median()` functions but now to the total number of steps taken per day in the `data` object (original data set with imputed missing values):
 
 ```{r MeanMedianTotalStepsDayImputed, echo=TRUE}
 mean(data[,list(total=sum(steps)), by="date"][[2]])
@@ -179,7 +191,7 @@ The median total number of steps taken per day is `r format(median(data[,list(to
 As clear from the results the imputation did not change the values of mean and median considerably, although on the histogram its clear that dataset with imputed missing values have higher number of steps for all the bins.
 
 ## Are there differences in activity patterns between weekdays and weekends?
-To explore if there's any difference in activity patterns between weekdays and weekends a panel plot was created. First, additional column is added to the dataset by calling `sapply` function on *date* column to check if the date is in the list of working day names. Based on the result weekday or weekend factor value was assigned in new column named *weekEndDay*:
+To explore if there's any difference in activity patterns between weekdays and weekends a panel plot was created. First, additional column is added to the dataset by calling `sapply` function on _date_ column to check if the date is in the list of working day names. Based on the result weekday or weekend factor value was assigned in new column named *weekEndDay*:
 
 ```{r WeekdayWeekend, echo=TRUE}
 data[,weekEndDay := as.factor(sapply(data$date, function(x) {ifelse(weekdays(x) %in% weekdays(Sys.Date()+0:4), "weekday", "weekend")}))]
