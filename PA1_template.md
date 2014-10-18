@@ -218,11 +218,12 @@ For imputation technique the predictions by regression was used to perform deter
 lm.impute <- lm(steps~as.factor(interval)+date, data=data)
 ```
 
-And then the predictions are obtained for all the data:
+And then the predictions are obtained for all the missing data. All negative values are converted to zero as it is not possible to have negative steps (this is just the result of the linear regression):
 
 
 ```r
-pred.impute <- predict (lm.impute, data)
+pred.impute <- predict(lm.impute, data)
+pred.impute[pred.impute < 0] <- 0
 ```
 
 Function `data.impute` will recreate a completed dataset by imputing predictions into the missing values:
@@ -236,18 +237,18 @@ data[,steps := data.impute(data[,steps], pred.impute)]
 ```
 
 ```
-##           steps       date interval
-##     1:  1.35779 2012-10-01        0
-##     2: -0.01957 2012-10-01        5
-##     3: -0.22712 2012-10-01       10
-##     4: -0.20825 2012-10-01       15
-##     5: -0.28372 2012-10-01       20
-##    ---                             
-## 17564:  5.06415 2012-11-30     2335
-## 17565:  3.66792 2012-11-30     2340
-## 17566:  1.00755 2012-11-30     2345
-## 17567:  0.59245 2012-11-30     2350
-## 17568:  1.44151 2012-11-30     2355
+##         steps       date interval
+##     1: 1.3578 2012-10-01        0
+##     2: 0.0000 2012-10-01        5
+##     3: 0.0000 2012-10-01       10
+##     4: 0.0000 2012-10-01       15
+##     5: 0.0000 2012-10-01       20
+##    ---                           
+## 17564: 5.0641 2012-11-30     2335
+## 17565: 3.6679 2012-11-30     2340
+## 17566: 1.0075 2012-11-30     2345
+## 17567: 0.5925 2012-11-30     2350
+## 17568: 1.4415 2012-11-30     2355
 ```
 
 Another check for missing values in _steps_ column:
@@ -312,18 +313,18 @@ data[,weekEndDay := as.factor(sapply(data$date, function(x) {ifelse(weekdays(x) 
 ```
 
 ```
-##           steps       date interval weekEndDay
-##     1:  1.35779 2012-10-01        0    weekday
-##     2: -0.01957 2012-10-01        5    weekday
-##     3: -0.22712 2012-10-01       10    weekday
-##     4: -0.20825 2012-10-01       15    weekday
-##     5: -0.28372 2012-10-01       20    weekday
-##    ---                                        
-## 17564:  5.06415 2012-11-30     2335    weekend
-## 17565:  3.66792 2012-11-30     2340    weekend
-## 17566:  1.00755 2012-11-30     2345    weekend
-## 17567:  0.59245 2012-11-30     2350    weekend
-## 17568:  1.44151 2012-11-30     2355    weekend
+##         steps       date interval weekEndDay
+##     1: 1.3578 2012-10-01        0    weekday
+##     2: 0.0000 2012-10-01        5    weekday
+##     3: 0.0000 2012-10-01       10    weekday
+##     4: 0.0000 2012-10-01       15    weekday
+##     5: 0.0000 2012-10-01       20    weekday
+##    ---                                      
+## 17564: 5.0641 2012-11-30     2335    weekend
+## 17565: 3.6679 2012-11-30     2340    weekend
+## 17566: 1.0075 2012-11-30     2345    weekend
+## 17567: 0.5925 2012-11-30     2350    weekend
+## 17568: 1.4415 2012-11-30     2355    weekend
 ```
 
 Then, panel plot containing a time series plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days is created. Because the example plot described in assignment is not perfect to see the differences in activity pattern, two plots were created. First plot compares two activity patterns placed on same plotting area representing weekdays and weekend activity patterns:

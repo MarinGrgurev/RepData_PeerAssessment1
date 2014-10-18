@@ -142,10 +142,11 @@ For imputation technique the predictions by regression was used to perform deter
 lm.impute <- lm(steps~as.factor(interval)+date, data=data)
 ```
 
-And then the predictions are obtained for all the data:
+And then the predictions are obtained for all the missing data. All negative values are converted to zero as it is not possible to have negative steps (this is just the result of the linear regression):
 
 ```{r ImputationPredictions, echo=TRUE}
-pred.impute <- predict (lm.impute, data)
+pred.impute <- predict(lm.impute, data)
+pred.impute[pred.impute < 0] <- 0
 ```
 
 Function `data.impute` will recreate a completed dataset by imputing predictions into the missing values:
