@@ -50,13 +50,13 @@ data <- fread("data/activity.csv")
 data
 ```
 
-To compactly display internal strucuture of a `data` object (i.e. data structure, variable naming scheme, classes etc.) `str()` function is used:
+To compactly display internal strucuture of a `data` object (i.e. data structure, variable naming scheme, classes etc.) `str()` function was used:
 
 ```{r StructureCheck, echo=TRUE}
 str(data)
 ```
 
-As evident from the `str()` result, the _date_ column is of `"character"` class and _interval_ is of class `"integer"`. To correctly plot steps across time, _date_ column needed to be converted from character representation to class `"Date"`:
+As evident from the `str()` result, the _date_ column is of `"character"` class. To correctly plot steps across time, _date_ column needed to be converted from character representation to class `"Date"`:
 
 ```{r ConvertingColumns, echo=TRUE, results='hide'}
 data[,date := as.Date(date, "%Y-%m-%d")]
@@ -86,26 +86,25 @@ Histogram shows us distribution of total number of steps taken each day:
 
 ```{r HistogramMeanTotalStepsDay, echo=TRUE}
 ggplot(data.NA.omit[,list(total=sum(steps)), by="date"], aes(x=total))+
-        geom_histogram(breaks=seq(0,22500,2500), colour="black", fill="gray")+
+        geom_histogram(breaks=seq(0, 22500, 2500), colour="black", fill="gray")+
         labs(x="Total number of steps per day", y="Frequency")+
         ggtitle("Frequency of total number of steps taken each day")+
-        theme_bw()
+        theme_bw()+
+        theme(plot.title = element_text(face="bold", vjust=2))
 ```
 
-To calculate mean and median were calculated by applying `mean()` and `median()` functions to the total number of steps taken per day (second column in `data.NA.omit` object:
+Mean and median were calculated by applying `mean()` and `median()` functions to the total number of steps taken per day (second column in `data.NA.omit` object:
 
 ```{r MeanMedianTotalStepsDay, echo=TRUE}
 mean(data.NA.omit[,list(total=sum(steps)), by="date"][[2]])
 median(data.NA.omit[,list(total=sum(steps)), by="date"][[2]])
 ```
 
-The mean total number of steps taken per day is `r mean(data.NA.omit[,list(total=sum(steps)), by="date"][[2]])`.  
+The mean total number of steps taken per day is `r format(mean(data.NA.omit[,list(total=sum(steps)), by="date"][[2]]))`.  
 The median total number of steps taken per day is `r median(data.NA.omit[,list(total=sum(steps)), by="date"][[2]])`.
 
-Last thing to do for this part of the assignment is to save histogram figure in `figure/` folder:
-
 ### What is the average daily activity pattern?
-To create a time series plot of the 5-minute interval and the average number of steps taken, averaged across all days dataset without missing values from previous part (`data.NA.omit`) was used. By not grouping by date average number of steps across all days have been calculated and then grouped by interval to get average number of steps per interval: 
+To create a time series plot of the 5-minute interval and the average number of steps taken averaged across all days, dataset without missing values from previous part (`data.NA.omit`) was used. Average number of steps across all days have been calculated and then grouped by interval to get average number of steps per interval: 
 
 ```{r DailyActivityPattern, echo=TRUE}
 ggplot(data.NA.omit[,list(total=mean(steps)), by="interval"], aes(x=interval, y=total))+
@@ -114,7 +113,8 @@ ggplot(data.NA.omit[,list(total=mean(steps)), by="interval"], aes(x=interval, y=
         scale_x_continuous(breaks=c(0, 500, 835, 1000, 1500, 2000))+
         labs(x="5-minute interval", y="Average number of steps taken")+
         ggtitle("Average number of steps taken per each 5-minute interval")+
-        theme_bw()
+        theme_bw()+
+        theme(plot.title = element_text(face="bold", vjust=2))
 ```
 
 On average, across all the days in the dataset `r data.NA.omit[,list(total=mean(steps)), by="interval"][total==max(total)][[1]]` contains maximum number of steps (`r data.NA.omit[,list(total=mean(steps)), by="interval"][total==max(total)][[2]]`).
@@ -128,10 +128,10 @@ data[,lapply(data, function(x) {sum(is.na(x))})]
 
 There is `r sum(is.na(data[,steps]))` rows that have missing values in _steps_ column while other two columns don't have missing values.  
 
-For imputation technique the regression predictions imputation was used. More about this relatively simple technique as well as code used in this assignment can be found [here](http://www.stat.columbia.edu/~gelman/arm/missing.pdf). This imputation technique is a simple and general imputation procedure that uses information on rest of the data on interval and date and regress it to the nonzero values of number of steps. First linear regression model is fitted with `lm`:
+For imputation technique the regression predictions was used to perform determinsitic imputation. More about this relatively simple technique as well as code used in this assignment can be found [here](http://www.stat.columbia.edu/~gelman/arm/missing.pdf). This imputation technique is a simple and general imputation procedure that uses information from the rest of the data (interval and date) to calculate regression model and that model is then used to impute values in cases where that variable is missing. First linear regression model is fitted with `lm`:
 
 ```{r ImputationModelFit, echo=TRUE}
-lm.impute <- lm(steps~interval+date, data=data)
+lm.impute <- lm(steps~as.factor(interval)+date, data=data)
 ```
 
 And then the predictions are obtained for all the data:
@@ -146,7 +146,7 @@ Function `data.impute` will recreate a completed dataset by imputing predictions
 data.impute <- function (x, x.impute){
         ifelse (is.na(x), x.impute, x)
         }
-data$steps <- data.impute(data$steps, pred.impute)
+data[,steps := data.impute(data[,steps], pred.impute)]
 ```
 
 Another check for missing values in _steps_ column:
@@ -162,7 +162,8 @@ ggplot(data[,list(total=sum(steps)), by="date"], aes(x=total))+
         geom_histogram(breaks=seq(0,22500,2500), colour="black", fill="gray")+
         labs(x="Total number of steps per day", y="Frequency")+
         ggtitle("Frequency of total number of steps taken each day (Imputed NAs)")+
-        theme_bw()
+        theme_bw()+
+        theme(plot.title = element_text(face="bold", vjust=2))
 ```
 
 Mean and median were calculated same as in before by applying `mean()` and `median()` functions but now to the total number of steps taken per day in the `data` object:
@@ -172,19 +173,19 @@ mean(data[,list(total=sum(steps)), by="date"][[2]])
 median(data[,list(total=sum(steps)), by="date"][[2]])
 ```
 
-The mean total number of steps taken per day is `r mean(data[,list(total=sum(steps)), by="date"][[2]])`.  
-The median total number of steps taken per day is `r median(data[,list(total=sum(steps)), by="date"][[2]])`.
+The mean total number of steps taken per day is `r format(mean(data[,list(total=sum(steps)), by="date"][[2]]))`.  
+The median total number of steps taken per day is `r format(median(data[,list(total=sum(steps)), by="date"][[2]]))`.
 
 As clear from the results the imputation did not change the values of mean and median considerably, although on the histogram its clear that dataset with imputed missing values have higher number of steps for all the bins.
 
 ## Are there differences in activity patterns between weekdays and weekends?
-To explore if there's any difference in activity patterns between weekdays and weekends a panel plot was created. First, additional column is added to the dataset by calling `sapply` function on _date_ column to check if the date is in the list of working day names. Based on the result weekday or weekend factor value was assigned in new column named _weekEndDay_:
+To explore if there's any difference in activity patterns between weekdays and weekends a panel plot was created. First, additional column is added to the dataset by calling `sapply` function on *date* column to check if the date is in the list of working day names. Based on the result weekday or weekend factor value was assigned in new column named *weekEndDay*:
 
 ```{r WeekdayWeekend, echo=TRUE}
 data[,weekEndDay := as.factor(sapply(data$date, function(x) {ifelse(weekdays(x) %in% weekdays(Sys.Date()+0:4), "weekday", "weekend")}))]
 ```
 
-Then, panel plot containing a time series plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days is created. Becasue the example plot described in assignemnt is not perfect to explore the differences in activity pattern two plots were created. First plot compares two activity patterns placed on same plotting area representing weekdays and weekend activity patterns:
+Then, panel plot containing a time series plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days is created. Because the example plot described in assignment is not perfect to see the differences in activity pattern, two plots were created. First plot compares two activity patterns placed on same plotting area representing weekdays and weekend activity patterns:
 
 ```{r WeekEndDayCompare1, echo=TRUE}
 ggplot(data[,list(total=mean(steps)), by="interval,weekEndDay"], aes(x=interval, y=total, group=weekEndDay))+
@@ -192,7 +193,10 @@ ggplot(data[,list(total=mean(steps)), by="interval,weekEndDay"], aes(x=interval,
         labs(x="5-minute interval", y="Average number of steps taken")+
         ggtitle("Comparison of activity patterns between weekdays and weekends")+
         theme_bw()+
-        theme(plot.title=element_text(vjust=1), 
+        theme(text=element_text(colour="grey25"), 
+              plot.title=element_text(face="bold", vjust=2),
+              axis.title.x = element_text(colour = "grey25", vjust=-0.3),
+              axis.title.y = element_text(colour = "grey25", vjust=1),
               legend.title=element_blank(), 
               legend.position=c(0.99, .70), 
               legend.justification=c(1,0),
@@ -207,8 +211,12 @@ ggplot(data[,list(total=mean(steps)), by="interval,weekEndDay"], aes(x=interval,
         facet_grid(.~weekEndDay)+
         labs(x="5-minute interval", y="Average number of steps taken")+
         ggtitle("Comparison of activity patterns between weekdays and weekends")+
-        theme_bw()+
-        theme(legend.position="none")
+        theme_bw(base_size = 12)+
+        theme(text=element_text(colour = "grey25"), 
+              plot.title = element_text(face="bold", vjust=2),
+              axis.title.x = element_text(colour = "grey25", vjust=-0.3),
+              axis.title.y = element_text(colour = "grey25", vjust=1),
+              legend.position="none")
 ```
 
 By looking at created plots it is evident that the difference in activity patterns between weekdays and weekends really exists which is not surprising given the fact that humans tend to use weekends for various recreational activities during the course of a day and they are definitely not rushing to the work in the morning. Also very interesting to note is steep curve climb around 5.15 - 5.45 in the weekday mornings - phenomena which is probably influenced by alarm clocks :)
