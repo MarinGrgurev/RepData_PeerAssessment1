@@ -148,7 +148,7 @@ data[, .(totalStepsDay = sum(steps)), by = date][, median(totalStepsDay, na.rm =
 ## [1] 10765
 ```
 
-The mean total number of steps taken per day is 10766.19.  
+As evident from the above result the mean total number of steps taken per day is 10766.19.  
 The median total number of steps taken per day is 10765.
 
 ### What is the average daily activity pattern?
@@ -170,7 +170,7 @@ ggplot(data[, .(total = mean(steps, na.rm = TRUE)), by = interval], aes(x = inte
 
 <img src="figures/DailyActivityPattern-1.png" title="" alt="" style="display: block; margin: auto;" />
 
-On average, across all the days in the datasetinterval "835" contains maximum number of steps (206.1698).
+On average, across all the days in the dataset interval 835 contains maximum number of steps (206.1698).
 
 ## Imputing missing values
 First, quick summary for missing values across each column in dataset is given:
