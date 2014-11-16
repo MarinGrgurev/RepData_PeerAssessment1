@@ -77,7 +77,7 @@ As evident from the result, the _date_ column is of `character` class. To correc
 
 
 ```r
-data[,date := as.Date(date, "%Y-%m-%d")]
+data[, date := as.Date(date, "%Y-%m-%d")]
 ```
 
 Last check-out for internal structure to confirm that dataset is ready for analysis:
@@ -124,7 +124,7 @@ ggplot(data[, .(totalStepsDay = sum(steps)), by = date], aes(x = totalStepsDay))
         ggtitle("Frequency of total number of steps taken each day") +
         theme_bw(10) +
         theme(text = element_text(colour = "grey25"), 
-              plot.title = element_text(face = "bold", vjust = 2))
+              plot.title = element_text(face = "bold", vjust = 1.5))
 ```
 
 <img src="figures/HistogramMeanTotalStepsDay-1.png" title="" alt="" style="display: block; margin: auto;" />
@@ -163,7 +163,7 @@ ggplot(data[, .(total = mean(steps, na.rm = TRUE)), by = interval], aes(x = inte
         ggtitle("Average number of steps taken per each 5-minute interval") +
         theme_bw(10) +
         theme(text = element_text(colour = "grey25"), 
-              plot.title = element_text(face = "bold", vjust = 2))
+              plot.title = element_text(face = "bold", vjust = 1.5))
 ```
 
 <img src="figures/DailyActivityPattern-1.png" title="" alt="" style="display: block; margin: auto;" />
@@ -185,36 +185,19 @@ data[, lapply(data, function(x) {sum(is.na(x))})]
 
 There is 2304 rows that have missing values in _steps_ column while other two columns don't have missing values.
 
-For imputation technique the predictions by regression was used to perform determinsitic imputation. More about this relatively simple technique as well as code used in this assignment can be found [here](http://www.stat.columbia.edu/~gelman/arm/missing.pdf). This imputation technique is a simple and general imputation procedure that uses information from the rest of the data (_interval_ and _date_ columns) to fit regression model which is then used to impute values in cases where that variable had missing value. First linear regression model was fitted with `lm()`:
+For imputation strategy replacing missing data with mean number of steps for that interval across all days was used. To achieve that the position of each NA was found and replaced with the mean number of steps from that partiular interval:
 
 
 ```r
-lm.impute <- lm(steps~as.factor(interval)+date, data=data)
-```
-
-And then the predictions are obtained for all the missing data. All negative values are converted to zero as it is not possible to have negative steps (this is just the result of the linear regression):
-
-
-```r
-pred.impute <- predict(lm.impute, data)
-pred.impute[pred.impute < 0] <- 0
-```
-
-Function `data.impute` will recreate a completed dataset by imputing predictions into the missing values:
-
-
-```r
-data.impute <- function (x, x.impute){
-        ifelse (is.na(x), x.impute, x)
-        }
-data[,steps := data.impute(data[,steps], pred.impute)]
+setkey(data, interval)
+data[which(is.na(steps)), steps := as.integer(data[which(is.na(steps))][data[, .(total = round(mean(steps, na.rm = TRUE))), by = interval]][, total])]
 ```
 
 Another check for missing values in _steps_ column:
 
 
 ```r
-sum(is.na(data[,steps]))
+sum(is.na(data[, steps]))
 ```
 
 ```
@@ -225,69 +208,63 @@ Histogram now shows distribution of total number of steps taken each day but wit
 
 
 ```r
-ggplot(data[,list(total=sum(steps)), by="date"], aes(x=total))+
-        geom_histogram(breaks=seq(0,22500,2500), colour="black", fill="gray")+
-        labs(x="Total number of steps per day", y="Frequency")+
-        ggtitle("Frequency of total number of steps taken each day (Imputed NAs)")+
-        theme_bw()+
-        theme(text=element_text(colour = "grey25"), 
-              plot.title = element_text(face="bold", vjust=2),
-              axis.title.x = element_text(colour = "grey25", vjust=-0.3),
-              axis.title.y = element_text(colour = "grey25", vjust=1),
-              legend.position="none")
+ggplot(data[, .(total = sum(steps)), by = date], aes(x = total)) +
+        geom_histogram(breaks = seq(0, 22500, 2500), colour = "black", fill = "gray") +
+        labs(x = "Total number of steps per day", y = "Frequency") +
+        ggtitle("Frequency of total number of steps taken each day (Imputed NAs)") +
+        theme_bw(10) +
+        theme(text = element_text(colour = "grey25"), 
+              plot.title = element_text(face = "bold", vjust = 2))
 ```
 
 <img src="figures/HistogramMeanTotalStepsDayImputed-1.png" title="" alt="" style="display: block; margin: auto;" />
 
-Mean and median values were calculated same by applying `mean()` and `median()` functions but now to the total number of steps taken per day in the `data` object (original data set with imputed missing values):
+Mean and median values were calculated same as above by applying `mean()` and `median()` functions but now to the data set with imputed missing values):
 
 
 ```r
-mean(data[,list(total=sum(steps)), by="date"][[2]])
+data[, .(totalStepsDay = sum(steps)), by = date][, mean(totalStepsDay, na.rm = TRUE)]
 ```
 
 ```
-## [1] 10767.45
+## [1] 10765.64
 ```
 
 ```r
-median(data[,list(total=sum(steps)), by="date"][[2]])
+data[, .(totalStepsDay = sum(steps)), by = date][, median(totalStepsDay, na.rm = TRUE)]
 ```
 
 ```
-## [1] 10781.1
+## [1] 10762
 ```
 
-The mean total number of steps taken per day is 10767.45.  
-The median total number of steps taken per day is 10781.1.
+Again as above plot is showing the mean total number of steps taken per day is 10765.64, while the median total number of steps taken per day is 10762.
 
 As clear from the results the imputation did not change the values of mean and median considerably, although on the histogram its clear that dataset with imputed missing values have higher number of steps for all the bins.
 
 ## Are there differences in activity patterns between weekdays and weekends?
-To explore if there's any difference in activity patterns between weekdays and weekends a panel plot was created. First, additional column is added to the dataset by calling `sapply` function on _date_ column to check if the date is in the list of working day names. Based on the result weekday or weekend factor value was assigned in new column named *weekEndDay*:
+To explore if there's any difference in activity patterns between weekdays and weekends a panel plot was created. First, additional column is added to the dataset by calling `sapply()` function on _date_ column to check if the date is in the list of working day names. Based on the result weekday or weekend factor value was assigned in new column named *weekEndDay*:
 
 
 ```r
-data[,weekEndDay := as.factor(sapply(data$date, function(x) {ifelse(weekdays(x) %in% weekdays(Sys.Date()+0:4), "weekday", "weekend")}))]
+data[, weekEndDay := as.factor(sapply(data[, date], function(x) {ifelse(weekdays(x) %in% weekdays(Sys.Date()+0:4), "weekday", "weekend")}))]
 ```
 
 Then, panel plot containing a time series plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days is created. Because the example plot described in assignment is not perfect to see the differences in activity pattern, two plots were created. First plot compares two activity patterns placed on same plotting area representing weekdays and weekend activity patterns:
 
 
 ```r
-ggplot(data[,list(total=mean(steps)), by="interval,weekEndDay"], aes(x=interval, y=total, group=weekEndDay))+
-        geom_line(aes(color=weekEndDay))+
-        labs(x="5-minute interval", y="Average number of steps taken")+
-        ggtitle("Comparison of activity patterns between weekdays and weekends")+
-        theme_bw()+
-        theme(text=element_text(colour="grey25"), 
-              plot.title=element_text(face="bold", vjust=2),
-              axis.title.x = element_text(colour = "grey25", vjust=-0.3),
-              axis.title.y = element_text(colour = "grey25", vjust=1),
-              legend.title=element_blank(), 
-              legend.position=c(0.99, .70), 
-              legend.justification=c(1,0),
-              legend.background=element_rect(fill="transparent"))
+ggplot(data[, .(total = mean(steps)), by = "interval,weekEndDay"], aes(x = interval, y = total, group = weekEndDay)) +
+        geom_line(aes(color = weekEndDay)) +
+        labs(x = "5-minute interval", y = "Average number of steps taken") +
+        ggtitle("Comparison of activity patterns between weekdays and weekends") +
+        theme_bw(10) +
+        theme(text = element_text(colour = "grey25"), 
+              plot.title = element_text(face = "bold", vjust = 1.5),
+              legend.title = element_blank(), 
+              legend.position=c(0.99, 0.70), 
+              legend.justification = c(1, 0),
+              legend.background = element_rect(fill = "transparent"))
 ```
 
 <img src="figures/WeekEndDayCompare1-1.png" title="" alt="" style="display: block; margin: auto;" />
@@ -296,16 +273,14 @@ The second plot represent same comparison of activity pattern but on two differe
 
 
 ```r
-ggplot(data[,list(total=mean(steps)), by="interval,weekEndDay"], aes(x=interval, y=total, group=weekEndDay))+
-        geom_line(aes(color=weekEndDay))+
-        facet_grid(.~weekEndDay)+
-        labs(x="5-minute interval", y="Average number of steps taken")+
-        ggtitle("Comparison of activity patterns between weekdays and weekends")+
-        theme_bw(base_size = 12)+
+ggplot(data[, .(total = mean(steps)), by = "interval,weekEndDay"], aes(x = interval, y = total, group = weekEndDay)) +
+        geom_line(aes(color = weekEndDay)) +
+        facet_grid(.~weekEndDay) +
+        labs(x = "5-minute interval", y = "Average number of steps taken") +
+        ggtitle("Comparison of activity patterns between weekdays and weekends") +
+        theme_bw(10) +
         theme(text = element_text(colour = "grey25"), 
-              plot.title = element_text(face="bold", vjust=2),
-              axis.title.x = element_text(colour = "grey25", vjust=-0.3),
-              axis.title.y = element_text(colour = "grey25", vjust=1),
+              plot.title = element_text(face = "bold", vjust = 1.5),
               legend.position="none")
 ```
 
