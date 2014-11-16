@@ -102,7 +102,7 @@ data[, .(totalStepsDay = sum(steps)), by = date][, mean(totalStepsDay, na.rm = T
 data[, .(totalStepsDay = sum(steps)), by = date][, median(totalStepsDay, na.rm = TRUE)]
 ```
 
-The mean total number of steps taken per day is `r format(data[, .(totalStepsDay = sum(steps)), by = date][, mean(totalStepsDay, na.rm = TRUE)])`.  
+As evident from the above result the mean total number of steps taken per day is `r format(data[, .(totalStepsDay = sum(steps)), by = date][, mean(totalStepsDay, na.rm = TRUE)])`.  
 The median total number of steps taken per day is `r format(data[, .(totalStepsDay = sum(steps)), by = date][, median(totalStepsDay, na.rm = TRUE)])`.
 
 ### What is the average daily activity pattern?
