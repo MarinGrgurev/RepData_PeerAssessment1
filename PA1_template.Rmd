@@ -15,8 +15,8 @@ library(data.table)
 library(ggplot2)
 ``` 
 
-```{r KnitrOPtions, echo=FALSE}
-opts_chunk$set(fig.path="figures/", fig.align = "center")
+```{r KnitrOptions, echo=FALSE}
+opts_chunk$set(fig.path = "figures/", fig.align = "center")
 
 ```
 
@@ -102,8 +102,7 @@ data[, .(totalStepsDay = sum(steps)), by = date][, mean(totalStepsDay, na.rm = T
 data[, .(totalStepsDay = sum(steps)), by = date][, median(totalStepsDay, na.rm = TRUE)]
 ```
 
-As evident from the above result the mean total number of steps taken per day is `r format(data[, .(totalStepsDay = sum(steps)), by = date][, mean(totalStepsDay, na.rm = TRUE)])`.  
-The median total number of steps taken per day is `r format(data[, .(totalStepsDay = sum(steps)), by = date][, median(totalStepsDay, na.rm = TRUE)])`.
+As evident from the above result the mean total number of steps taken per day is `r format(data[, .(totalStepsDay = sum(steps)), by = date][, mean(totalStepsDay, na.rm = TRUE)])`. The median total number of steps taken per day is `r format(data[, .(totalStepsDay = sum(steps)), by = date][, median(totalStepsDay, na.rm = TRUE)])`.
 
 ### What is the average daily activity pattern?
 To create a time series plot of the 5-minute interval and the average number of steps taken averaged across all days, average number of steps across all days have been calculated and then grouped by interval to get average number of steps: 
@@ -117,8 +116,7 @@ ggplot(data[, .(total = mean(steps, na.rm = TRUE)), by = interval], aes(x = inte
         ggtitle("Average number of steps taken per each 5-minute interval") +
         theme_bw(10) +
         theme(text = element_text(colour = "grey25"), 
-              plot.title = element_text(face="bold", vjust=2),
-              legend.position="none")
+              plot.title = element_text(face = "bold", vjust = 2))
 ```
 
 On average, across all the days in the dataset interval `r data[, .(total = mean(steps, na.rm = TRUE)), by = interval][max(total) == total, interval]` contains maximum number of steps (`r format(data[, .(total = mean(steps, na.rm = TRUE)), by = interval][max(total) == total, total])`).
@@ -127,10 +125,10 @@ On average, across all the days in the dataset interval `r data[, .(total = mean
 First, quick summary for missing values across each column in dataset is given:
 
 ```{r MissingValueCheck, echo=TRUE}
-data[,lapply(data, function(x) {sum(is.na(x))})]
+data[, lapply(data, function(x) {sum(is.na(x))})]
 ```
 
-There is `r sum(is.na(data[,steps]))` rows that have missing values in _steps_ column while other two columns don't have missing values.  
+There is `r sum(is.na(data[, steps]))` rows that have missing values in _steps_ column while other two columns don't have missing values.
 
 For imputation technique the predictions by regression was used to perform determinsitic imputation. More about this relatively simple technique as well as code used in this assignment can be found [here](http://www.stat.columbia.edu/~gelman/arm/missing.pdf). This imputation technique is a simple and general imputation procedure that uses information from the rest of the data (_interval_ and _date_ columns) to fit regression model which is then used to impute values in cases where that variable had missing value. First linear regression model was fitted with `lm()`:
 

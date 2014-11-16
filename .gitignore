@@ -1,0 +1,11 @@
+.Rproj.user
+.Rhistory
+.RData
+figures/*.pdf
+croatiaLocale
+README.html
+data/
+review/
+PA1_template.pdf
+PA1_template_files/
+*Rproj

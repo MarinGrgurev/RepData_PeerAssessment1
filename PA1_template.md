@@ -148,8 +148,7 @@ data[, .(totalStepsDay = sum(steps)), by = date][, median(totalStepsDay, na.rm =
 ## [1] 10765
 ```
 
-As evident from the above result the mean total number of steps taken per day is 10766.19.  
-The median total number of steps taken per day is 10765.
+As evident from the above result the mean total number of steps taken per day is 10766.19. The median total number of steps taken per day is 10765.
 
 ### What is the average daily activity pattern?
 To create a time series plot of the 5-minute interval and the average number of steps taken averaged across all days, average number of steps across all days have been calculated and then grouped by interval to get average number of steps: 
@@ -164,8 +163,7 @@ ggplot(data[, .(total = mean(steps, na.rm = TRUE)), by = interval], aes(x = inte
         ggtitle("Average number of steps taken per each 5-minute interval") +
         theme_bw(10) +
         theme(text = element_text(colour = "grey25"), 
-              plot.title = element_text(face="bold", vjust=2),
-              legend.position="none")
+              plot.title = element_text(face = "bold", vjust = 2))
 ```
 
 <img src="figures/DailyActivityPattern-1.png" title="" alt="" style="display: block; margin: auto;" />
@@ -177,7 +175,7 @@ First, quick summary for missing values across each column in dataset is given:
 
 
 ```r
-data[,lapply(data, function(x) {sum(is.na(x))})]
+data[, lapply(data, function(x) {sum(is.na(x))})]
 ```
 
 ```
@@ -185,7 +183,7 @@ data[,lapply(data, function(x) {sum(is.na(x))})]
 ## 1:  2304    0        0
 ```
 
-There is 2304 rows that have missing values in _steps_ column while other two columns don't have missing values.  
+There is 2304 rows that have missing values in _steps_ column while other two columns don't have missing values.
 
 For imputation technique the predictions by regression was used to perform determinsitic imputation. More about this relatively simple technique as well as code used in this assignment can be found [here](http://www.stat.columbia.edu/~gelman/arm/missing.pdf). This imputation technique is a simple and general imputation procedure that uses information from the rest of the data (_interval_ and _date_ columns) to fit regression model which is then used to impute values in cases where that variable had missing value. First linear regression model was fitted with `lm()`:
 
