@@ -1,6 +1,9 @@
 # Reproducible Research: Peer Assessment 1 - Personal Activity Monitoring
 Marin Grgurev  
-October 18, 2014  
+November 16, 2014  
+
+
+
 
 
 
@@ -32,7 +35,7 @@ The dataset is stored in a comma-separated-value (CSV) file and there are a tota
 
 ## Assignment
 ### Loading and preprocessing the data
-For handling data in this assignment `data.table` package was used. The data have been read with `fread()` function and assigned to `data` object:
+For handling data in this assignment __data.table__ package was used. This package was used because of its SQL-ish approach to handling regular dataframes, speed and ease of use. It is in no way required to correctly finish this assignment. Its sole purpose here is to practice how to use it as author of this report is in the process of learning it :) and regarding this assignment a regular `data.frame` functions could have been used. So, first the data have been read with `fread()` function:
 
 
 ```r
@@ -55,7 +58,7 @@ data
 ## 17568:    NA 2012-11-30     2355
 ```
 
-To compactly display internal strucuture of a `data` object (i.e. data structure, variable naming scheme, classes etc.) `str()` function was used:
+To compactly display internal strucuture of the data (i.e. data structure, variable naming scheme, classes etc.) `str()` function was used:
 
 
 ```r
@@ -70,7 +73,7 @@ str(data)
 ##  - attr(*, ".internal.selfref")=<externalptr>
 ```
 
-As evident from the `str()` result, the _date_ column is of `"character"` class. To correctly plot steps across time, _date_ column needs to be converted from character representation to class `"Date"`:
+As evident from the result, the _date_ column is of `character` class. To correctly plot steps across time, _date_ column needs to be converted from character representation to `Date` class:
 
 
 ```r
@@ -93,108 +96,81 @@ str(data)
 ```
 
 ### What is mean total number of steps taken per day?
-As stated in the assignment missing values can be ignored for this part so with function `complete.cases()` missing values are excluded from calculations:
+As stated in the assignment, missing values can be ignored so for this part no special subsetting actions to remove NA from data set will be perforemed in order to plot histogram and calculate total, mean and median values of steps taken per day.
+
+To create histogram of the total number of steps taken each day total number of steps was summed and then aggregated by date: 
 
 
 ```r
-data.NA.omit <- data[complete.cases(data),]
-data.NA.omit
+data[, .(totalStepsDay = sum(steps)), by = date][1:5]  # showing only first 5 values
 ```
 
 ```
-##        steps       date interval
-##     1:     0 2012-10-02        0
-##     2:     0 2012-10-02        5
-##     3:     0 2012-10-02       10
-##     4:     0 2012-10-02       15
-##     5:     0 2012-10-02       20
-##    ---                          
-## 15260:     0 2012-11-29     2335
-## 15261:     0 2012-11-29     2340
-## 15262:     0 2012-11-29     2345
-## 15263:     0 2012-11-29     2350
-## 15264:     0 2012-11-29     2355
-```
-
-To calculate total number of steps taken per day, first total number of steps was summed and then aggregated by _date_: 
-
-
-```r
-data.NA.omit[,list(total=sum(steps)), by="date"][1:6]
-```
-
-```
-##          date total
-## 1: 2012-10-02   126
-## 2: 2012-10-03 11352
-## 3: 2012-10-04 12116
-## 4: 2012-10-05 13294
-## 5: 2012-10-06 15420
-## 6: 2012-10-07 11015
+##          date totalStepsDay
+## 1: 2012-10-01            NA
+## 2: 2012-10-02           126
+## 3: 2012-10-03         11352
+## 4: 2012-10-04         12116
+## 5: 2012-10-05         13294
 ```
 
 Histogram shows us distribution of total number of steps taken each day:
 
 
 ```r
-ggplot(data.NA.omit[,list(total=sum(steps)), by="date"], aes(x=total))+
-        geom_histogram(breaks=seq(0, 22500, 2500), colour="black", fill="gray")+
-        labs(x="Total number of steps per day", y="Frequency")+
-        ggtitle("Frequency of total number of steps taken each day")+
-        theme_bw()+
-        theme(text=element_text(colour = "grey25"), 
-              plot.title = element_text(face="bold", vjust=2),
-              axis.title.x = element_text(colour = "grey25", vjust=-0.3),
-              axis.title.y = element_text(colour = "grey25", vjust=1),
-              legend.position="none")
+ggplot(data[, .(totalStepsDay = sum(steps)), by = date], aes(x = totalStepsDay)) +
+        geom_histogram(breaks = seq(0, 22500, 2500), colour = "black", fill = "gray") +
+        labs(x = "Total number of steps per day", y = "Frequency") +
+        ggtitle("Frequency of total number of steps taken each day") +
+        theme_bw(10) +
+        theme(text = element_text(colour = "grey25"), 
+              plot.title = element_text(face = "bold", vjust = 2))
 ```
 
-![plot of chunk HistogramMeanTotalStepsDay](figures/HistogramMeanTotalStepsDay.png) 
+<img src="figures/HistogramMeanTotalStepsDay-1.png" title="" alt="" style="display: block; margin: auto;" />
 
-Mean and median were calculated by applying `mean()` and `median()` functions to the total number of steps taken per day (second column in `data.NA.omit` object:
+Mean and median were calculated by applying `mean()` and `median()` functions to the total number of steps taken per day:
 
 
 ```r
-mean(data.NA.omit[,list(total=sum(steps)), by="date"][[2]])
+data[, .(totalStepsDay = sum(steps)), by = date][, mean(totalStepsDay, na.rm = TRUE)]
 ```
 
 ```
-## [1] 10766
+## [1] 10766.19
 ```
 
 ```r
-median(data.NA.omit[,list(total=sum(steps)), by="date"][[2]])
+data[, .(totalStepsDay = sum(steps)), by = date][, median(totalStepsDay, na.rm = TRUE)]
 ```
 
 ```
 ## [1] 10765
 ```
 
-The mean total number of steps taken per day is 10766.  
+The mean total number of steps taken per day is 10766.19.  
 The median total number of steps taken per day is 10765.
 
 ### What is the average daily activity pattern?
-To create a time series plot of the 5-minute interval and the average number of steps taken averaged across all days, dataset without missing values from previous part (`data.NA.omit`) was used. Average number of steps across all days have been calculated and then grouped by interval to get average number of steps per interval: 
+To create a time series plot of the 5-minute interval and the average number of steps taken averaged across all days, average number of steps across all days have been calculated and then grouped by interval to get average number of steps: 
 
 
 ```r
-ggplot(data.NA.omit[,list(total=mean(steps)), by="interval"], aes(x=interval, y=total))+
-        geom_line()+
-        geom_vline(xintercept=data.NA.omit[,list(total=mean(steps)), by="interval"][total==max(total)][[1]], colour="green")+
-        scale_x_continuous(breaks=c(0, 500, 835, 1000, 1500, 2000))+
-        labs(x="5-minute interval", y="Average number of steps taken")+
-        ggtitle("Average number of steps taken per each 5-minute interval")+
-        theme_bw()+
-        theme(text=element_text(colour = "grey25"), 
+ggplot(data[, .(total = mean(steps, na.rm = TRUE)), by = interval], aes(x = interval, y = total)) +
+        geom_line() +
+        geom_vline(xintercept = data[, .(total = mean(steps, na.rm = TRUE)), by = interval][max(total) == total, interval], colour = "green") +
+        scale_x_continuous(breaks = c(0, 500, 835, 1000, 1500, 2000)) +
+        labs(x = "5-minute interval", y = "Average number of steps taken") +
+        ggtitle("Average number of steps taken per each 5-minute interval") +
+        theme_bw(10) +
+        theme(text = element_text(colour = "grey25"), 
               plot.title = element_text(face="bold", vjust=2),
-              axis.title.x = element_text(colour = "grey25", vjust=-0.3),
-              axis.title.y = element_text(colour = "grey25", vjust=1),
               legend.position="none")
 ```
 
-![plot of chunk DailyActivityPattern](figures/DailyActivityPattern.png) 
+<img src="figures/DailyActivityPattern-1.png" title="" alt="" style="display: block; margin: auto;" />
 
-On average, across all the days in the dataset 835th interval contains maximum number of steps (206.1698).
+On average, across all the days in the datasetinterval "835" contains maximum number of steps (206.1698).
 
 ## Imputing missing values
 First, quick summary for missing values across each column in dataset is given:
@@ -236,21 +212,6 @@ data.impute <- function (x, x.impute){
 data[,steps := data.impute(data[,steps], pred.impute)]
 ```
 
-```
-##         steps       date interval
-##     1: 1.3578 2012-10-01        0
-##     2: 0.0000 2012-10-01        5
-##     3: 0.0000 2012-10-01       10
-##     4: 0.0000 2012-10-01       15
-##     5: 0.0000 2012-10-01       20
-##    ---                           
-## 17564: 5.0641 2012-11-30     2335
-## 17565: 3.6679 2012-11-30     2340
-## 17566: 1.0075 2012-11-30     2345
-## 17567: 0.5925 2012-11-30     2350
-## 17568: 1.4415 2012-11-30     2355
-```
-
 Another check for missing values in _steps_ column:
 
 
@@ -278,7 +239,7 @@ ggplot(data[,list(total=sum(steps)), by="date"], aes(x=total))+
               legend.position="none")
 ```
 
-![plot of chunk HistogramMeanTotalStepsDayImputed](figures/HistogramMeanTotalStepsDayImputed.png) 
+<img src="figures/HistogramMeanTotalStepsDayImputed-1.png" title="" alt="" style="display: block; margin: auto;" />
 
 Mean and median values were calculated same by applying `mean()` and `median()` functions but now to the total number of steps taken per day in the `data` object (original data set with imputed missing values):
 
@@ -288,7 +249,7 @@ mean(data[,list(total=sum(steps)), by="date"][[2]])
 ```
 
 ```
-## [1] 10767
+## [1] 10767.45
 ```
 
 ```r
@@ -296,11 +257,11 @@ median(data[,list(total=sum(steps)), by="date"][[2]])
 ```
 
 ```
-## [1] 10781
+## [1] 10781.1
 ```
 
-The mean total number of steps taken per day is 10767.  
-The median total number of steps taken per day is 10781.
+The mean total number of steps taken per day is 10767.45.  
+The median total number of steps taken per day is 10781.1.
 
 As clear from the results the imputation did not change the values of mean and median considerably, although on the histogram its clear that dataset with imputed missing values have higher number of steps for all the bins.
 
@@ -310,21 +271,6 @@ To explore if there's any difference in activity patterns between weekdays and w
 
 ```r
 data[,weekEndDay := as.factor(sapply(data$date, function(x) {ifelse(weekdays(x) %in% weekdays(Sys.Date()+0:4), "weekday", "weekend")}))]
-```
-
-```
-##         steps       date interval weekEndDay
-##     1: 1.3578 2012-10-01        0    weekday
-##     2: 0.0000 2012-10-01        5    weekday
-##     3: 0.0000 2012-10-01       10    weekday
-##     4: 0.0000 2012-10-01       15    weekday
-##     5: 0.0000 2012-10-01       20    weekday
-##    ---                                      
-## 17564: 5.0641 2012-11-30     2335    weekend
-## 17565: 3.6679 2012-11-30     2340    weekend
-## 17566: 1.0075 2012-11-30     2345    weekend
-## 17567: 0.5925 2012-11-30     2350    weekend
-## 17568: 1.4415 2012-11-30     2355    weekend
 ```
 
 Then, panel plot containing a time series plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days is created. Because the example plot described in assignment is not perfect to see the differences in activity pattern, two plots were created. First plot compares two activity patterns placed on same plotting area representing weekdays and weekend activity patterns:
@@ -346,7 +292,7 @@ ggplot(data[,list(total=mean(steps)), by="interval,weekEndDay"], aes(x=interval,
               legend.background=element_rect(fill="transparent"))
 ```
 
-![plot of chunk WeekEndDayCompare1](figures/WeekEndDayCompare1.png) 
+<img src="figures/WeekEndDayCompare1-1.png" title="" alt="" style="display: block; margin: auto;" />
 
 The second plot represent same comparison of activity pattern but on two different plotting areas (i.e. panel plot): 
 
@@ -358,13 +304,13 @@ ggplot(data[,list(total=mean(steps)), by="interval,weekEndDay"], aes(x=interval,
         labs(x="5-minute interval", y="Average number of steps taken")+
         ggtitle("Comparison of activity patterns between weekdays and weekends")+
         theme_bw(base_size = 12)+
-        theme(text=element_text(colour = "grey25"), 
+        theme(text = element_text(colour = "grey25"), 
               plot.title = element_text(face="bold", vjust=2),
               axis.title.x = element_text(colour = "grey25", vjust=-0.3),
               axis.title.y = element_text(colour = "grey25", vjust=1),
               legend.position="none")
 ```
 
-![plot of chunk WeekEndDayCompare2](figures/WeekEndDayCompare2.png) 
+<img src="figures/WeekEndDayCompare2-1.png" title="" alt="" style="display: block; margin: auto;" />
 
 By looking at created plots it is evident that the difference in activity patterns between weekdays and weekends really exists which is not surprising given the fact that humans tend to use weekends for various recreational activities during the course of a day and they are definitely not rushing to the work in the morning. Also very interesting to note is steep curve climb around 5.15 - 5.45 in the weekday mornings - phenomena which is probably influenced by alarm clocks :)
