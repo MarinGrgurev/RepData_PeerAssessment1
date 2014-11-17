@@ -49,7 +49,8 @@ The dataset is stored in a comma-separated-value (CSV) file and there are a tota
 
 ## Assignment
 ### Loading and preprocessing the data
-For handling data in this assignment __data.table__ package was used. This package was used because of its SQL-ish approach to handling regular dataframes, speed and ease of use. It is in no way required to correctly finish this assignment. Its sole purpose here is to practice how to use it as author of this report is in the process of learning it :) and regarding this assignment a regular `data.frame` functions could have been used. So, first the data have been read with `fread()` function:
+For handling data in this assignment __data.table__ package was used. This package was used because of its SQL-ish approach to handling regular dataframes, speed and ease of use. It is in no way required to correctly finish this assignment. Its sole purpose here is to practice how to use it as author of this report is in the process of learning it :). Thus regarding this assignment a regular `data.frame` functions could have been used. 
+The data have been read with `fread()` function:
 
 ```{r ReadingDataset, echo=TRUE}
 data <- fread("data/activity.csv")
