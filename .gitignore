@@ -8,4 +8,4 @@ data/
 review/
 PA1_template.pdf
 PA1_template_files/
-*Rproj
+*.Rproj
