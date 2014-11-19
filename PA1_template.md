@@ -134,19 +134,12 @@ Mean and median were calculated by applying `mean()` and `median()` functions to
 
 
 ```r
-data[, .(totalStepsDay = sum(steps)), by = date][, mean(totalStepsDay, na.rm = TRUE)]
+data[, .(totalStepsDay = sum(steps)), by = date][, .(mean = mean(totalStepsDay, na.rm = TRUE), median = median(totalStepsDay, na.rm = TRUE))]
 ```
 
 ```
-## [1] 10766.19
-```
-
-```r
-data[, .(totalStepsDay = sum(steps)), by = date][, median(totalStepsDay, na.rm = TRUE)]
-```
-
-```
-## [1] 10765
+##        mean median
+## 1: 10766.19  10765
 ```
 
 As evident from the above result the mean total number of steps taken per day is 10766.19. The median total number of steps taken per day is 10765.
@@ -224,19 +217,12 @@ Mean and median values were calculated same as above by applying `mean()` and `m
 
 
 ```r
-data[, .(totalStepsDay = sum(steps)), by = date][, mean(totalStepsDay, na.rm = TRUE)]
+data[, .(totalStepsDay = sum(steps)), by = date][, .(mean = mean(totalStepsDay, na.rm = TRUE), median(totalStepsDay, na.rm = TRUE))]
 ```
 
 ```
-## [1] 10765.64
-```
-
-```r
-data[, .(totalStepsDay = sum(steps)), by = date][, median(totalStepsDay, na.rm = TRUE)]
-```
-
-```
-## [1] 10762
+##        mean    V2
+## 1: 10765.64 10762
 ```
 
 Again as above plot is showing the mean total number of steps taken per day is 10765.64, while the median total number of steps taken per day is 10762.

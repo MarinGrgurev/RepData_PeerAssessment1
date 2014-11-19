@@ -99,8 +99,7 @@ ggplot(data[, .(totalStepsDay = sum(steps)), by = date], aes(x = totalStepsDay))
 Mean and median were calculated by applying `mean()` and `median()` functions to the total number of steps taken per day:
 
 ```{r MeanMedianTotalStepsDay, echo=TRUE}
-data[, .(totalStepsDay = sum(steps)), by = date][, mean(totalStepsDay, na.rm = TRUE)]
-data[, .(totalStepsDay = sum(steps)), by = date][, median(totalStepsDay, na.rm = TRUE)]
+data[, .(totalStepsDay = sum(steps)), by = date][, .(mean = mean(totalStepsDay, na.rm = TRUE), median = median(totalStepsDay, na.rm = TRUE))]
 ```
 
 As evident from the above result the mean total number of steps taken per day is `r format(data[, .(totalStepsDay = sum(steps)), by = date][, mean(totalStepsDay, na.rm = TRUE)])`. The median total number of steps taken per day is `r format(data[, .(totalStepsDay = sum(steps)), by = date][, median(totalStepsDay, na.rm = TRUE)])`.
@@ -159,8 +158,7 @@ ggplot(data[, .(total = sum(steps)), by = date], aes(x = total)) +
 Mean and median values were calculated same as above by applying `mean()` and `median()` functions but now to the data set with imputed missing values):
 
 ```{r MeanMedianTotalStepsDayImputed, echo=TRUE}
-data[, .(totalStepsDay = sum(steps)), by = date][, mean(totalStepsDay, na.rm = TRUE)]
-data[, .(totalStepsDay = sum(steps)), by = date][, median(totalStepsDay, na.rm = TRUE)]
+data[, .(totalStepsDay = sum(steps)), by = date][, .(mean = mean(totalStepsDay, na.rm = TRUE), median(totalStepsDay, na.rm = TRUE))]
 ```
 
 Again as above plot is showing the mean total number of steps taken per day is `r format(data[, .(totalStepsDay = sum(steps)), by = date][, mean(totalStepsDay, na.rm = TRUE)])`, while the median total number of steps taken per day is `r format(data[, .(totalStepsDay = sum(steps)), by = date][, median(totalStepsDay, na.rm = TRUE)])`.
