@@ -186,11 +186,11 @@ data[which(is.na(steps)), steps := as.integer(data[which(is.na(steps))][data[, .
 <pre><code>##        mean    V2
 ## 1: 10765.64 10762</code></pre>
 <p>Again as above plot is showing the mean total number of steps taken per day is 10765.64, while the median total number of steps taken per day is 10762.</p>
-<p>As clear from the results the imputation did not change the values of mean and median considerably, although on the histogram its clear that dataset with imputed missing values have higher number of steps for all the bins.</p>
+<p>As clear from the results the imputation did not change the values of mean and median considerably, although on the histogram it’s clear that dataset with imputed missing values have higher number of steps for all the bins.</p>
 </div>
 <div id="are-there-differences-in-activity-patterns-between-weekdays-and-weekends" class="section level2">
 <h2>Are there differences in activity patterns between weekdays and weekends?</h2>
-<p>To explore if there’s any difference in activity patterns between weekdays and weekends a panel plot was created. First, additional column is added to the dataset by calling <code>sapply()</code> function on <em>date</em> column to check if the date is in the list of working day names. Based on the result weekday or weekend factor value was assigned in new column named <em>weekEndDay</em>:</p>
+<p>To explore if there is any difference in activity patterns between weekdays and weekends a panel plot was created. First, additional column is added to the dataset by calling <code>sapply()</code> function on <em>date</em> column to check if the date is in the list of working day names. Based on the result weekday or weekend factor value was assigned in new column named <em>weekEndDay</em>:</p>
 <pre class="r"><code>data[, weekEndDay := as.factor(sapply(data[, date], function(x) {ifelse(weekdays(x) %in% weekdays(Sys.Date()+0:4), &quot;weekday&quot;, &quot;weekend&quot;)}))]</code></pre>
 <p>Then, panel plot containing a time series plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days is created. Because the example plot described in assignment is not perfect to see the differences in activity pattern, two plots were created. First plot compares two activity patterns placed on same plotting area representing weekdays and weekend activity patterns:</p>
 <pre class="r"><code>ggplot(data[, .(total = mean(steps)), by = &quot;interval,weekEndDay&quot;], aes(x = interval, y = total, group = weekEndDay)) +

@@ -227,10 +227,10 @@ data[, .(totalStepsDay = sum(steps)), by = date][, .(mean = mean(totalStepsDay, 
 
 Again as above plot is showing the mean total number of steps taken per day is 10765.64, while the median total number of steps taken per day is 10762.
 
-As clear from the results the imputation did not change the values of mean and median considerably, although on the histogram its clear that dataset with imputed missing values have higher number of steps for all the bins.
+As clear from the results the imputation did not change the values of mean and median considerably, although on the histogram it's clear that dataset with imputed missing values have higher number of steps for all the bins.
 
 ## Are there differences in activity patterns between weekdays and weekends?
-To explore if there's any difference in activity patterns between weekdays and weekends a panel plot was created. First, additional column is added to the dataset by calling `sapply()` function on _date_ column to check if the date is in the list of working day names. Based on the result weekday or weekend factor value was assigned in new column named *weekEndDay*:
+To explore if there is any difference in activity patterns between weekdays and weekends a panel plot was created. First, additional column is added to the dataset by calling `sapply()` function on _date_ column to check if the date is in the list of working day names. Based on the result weekday or weekend factor value was assigned in new column named *weekEndDay*:
 
 
 ```r
