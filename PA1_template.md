@@ -1,6 +1,6 @@
 # Reproducible Research: Peer Assessment 1 - Personal Activity Monitoring
 Marin Grgurev  
-November 16, 2014  
+December 13, 2014  
 
 
 
