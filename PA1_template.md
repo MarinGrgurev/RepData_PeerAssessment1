@@ -1,6 +1,6 @@
 # Reproducible Research: Peer Assessment 1 - Personal Activity Monitoring
 Marin Grgurev  
-November 16, 2014  
+January 17, 2015  
 
 
 
@@ -97,7 +97,7 @@ str(data)
 ```
 
 ### What is mean total number of steps taken per day?
-As stated in the assignment, missing values can be ignored so for this part no special subsetting actions to remove NA from data set will be perforemed in order to plot histogram and calculate total, mean and median values of steps taken per day.
+As stated in the assignment, missing values can be ignored so for this part no special subsetting actions to remove NA from data set will be performed in order to plot histogram and calculate total, mean and median values of steps taken per day.
 
 To create histogram of the total number of steps taken each day total number of steps was summed and then aggregated by date: 
 
@@ -115,7 +115,7 @@ data[, .(totalStepsDay = sum(steps)), by = date][1:5]  # showing only first 5 va
 ## 5: 2012-10-05         13294
 ```
 
-Histogram shows us distribution of total number of steps taken each day:
+Histogram shows distribution of total number of steps taken each day:
 
 
 ```r
@@ -179,7 +179,7 @@ data[, lapply(data, function(x) {sum(is.na(x))})]
 
 There is 2304 rows that have missing values in _steps_ column while other two columns don't have missing values.
 
-For imputation strategy replacing missing data with mean number of steps for that interval across all days was used. To achieve that the position of each NA was found and replaced with the mean number of steps from that partiular interval:
+For imputation strategy replacing missing data with mean number of steps for that interval across all days was used. To achieve that the position of each NA was found and replaced with the mean number of steps from that particular interval:
 
 
 ```r
